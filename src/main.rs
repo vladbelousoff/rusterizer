@@ -10,31 +10,35 @@ mod mat44;
 mod vec3;
 
 fn main() {
-    let vertices = [
-        Vec3::new(-1.0, -1.0, 1.0),
-        Vec3::new(1.0, -1.0, 1.0),
-        Vec3::new(1.0, 1.0, 1.0),
-        Vec3::new(-1.0, 1.0, 1.0),
-        Vec3::new(-1.0, -1.0, -1.0),
-        Vec3::new(1.0, -1.0, -1.0),
-        Vec3::new(1.0, 1.0, -1.0),
-        Vec3::new(-1.0, 1.0, -1.0),
-    ];
+    // Generate a UV sphere
+    let lat_segments = 20;
+    let lon_segments = 20;
+    let mut vertices = Vec::new();
+    for i in 0..=lat_segments {
+        let theta = std::f32::consts::PI * (i as f32) / (lat_segments as f32);
+        let y = theta.cos();
+        let r = theta.sin();
+        for j in 0..=lon_segments {
+            let phi = 2.0 * std::f32::consts::PI * (j as f32) / (lon_segments as f32);
+            let x = r * phi.cos();
+            let z = r * phi.sin();
+            vertices.push(Vec3::new(x, y, z));
+        }
+    }
 
-    let indices: Vec<(usize, usize, usize)> = vec![
-        (0, 1, 2),
-        (2, 3, 0),
-        (1, 5, 6),
-        (6, 2, 1),
-        (7, 6, 5),
-        (5, 4, 7),
-        (4, 0, 3),
-        (3, 7, 4),
-        (4, 5, 1),
-        (1, 0, 4),
-        (3, 2, 6),
-        (6, 7, 3),
-    ];
+    // Generate indices for triangles
+    let mut indices = Vec::new();
+    for i in 0..lat_segments {
+        for j in 0..lon_segments {
+            let a = i * (lon_segments + 1) + j;
+            let b = a + lon_segments + 1;
+            let c = a + 1;
+            let d = b + 1;
+            // Each quad is split into two triangles
+            indices.push((a, b, c));
+            indices.push((c, b, d));
+        }
+    }
 
     let sun_dir = Vec3::new(2.0, -0.25, -1.0);
 
