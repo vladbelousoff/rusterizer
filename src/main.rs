@@ -22,7 +22,7 @@ fn main() {
             let phi = 2.0 * std::f32::consts::PI * (j as f32) / (lon_segments as f32);
             let x = r * phi.cos();
             let z = r * phi.sin();
-            vertices.push(Vec3::new(x, y, z));
+            vertices.push(Vec3::new(x * 1.5, y * 1.5, z * 1.5));
         }
     }
 
